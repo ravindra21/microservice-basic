@@ -1,0 +1,20 @@
+{
+  "name": "report",
+  "version": "1.0.0",
+  "description": "report service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "report",
+    "service"
+  ],
+  "author": "ravindra",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3",
+    "kafkajs": "^1.16.0",
+    "mongoose": "^6.3.1"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "productsearch",
+  "version": "1.0.0",
+  "description": "product search service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "product",
+    "search",
+    "service"
+  ],
+  "author": "ravindra",
+  "license": "ISC",
+  "dependencies": {
+    "@elastic/elasticsearch": "^8.1.0",
+    "express": "^4.17.3",
+    "kafkajs": "^1.16.0"
+  }
+}
