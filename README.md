@@ -1,3 +1,7 @@
+## architecture
+
+![image](https://user-images.githubusercontent.com/26089535/167200992-f4212d09-72a1-4458-9e4f-6beaf61a28e5.png)
+
 install docker
 
 edit email service environment (./docker-compose.yml) add :
