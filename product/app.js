@@ -29,7 +29,7 @@ async function main() {
     await mongoose.connect(mongoUrl)
 
     app.get('/', async (req, res) => {
-        res.send('product service')
+        res.send('product services')
     })
 
     app.post('/', async (req, res) => {

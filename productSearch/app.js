@@ -1,6 +1,13 @@
 const express = require('express')
 const { Kafka } = require('kafkajs')
 const { Client: Elastic } = require('@elastic/elasticsearch')
+const VaultSDK = require('node-vault');
+
+const vaultClient = VaultSDK({
+    apiVersion: 'v1',
+    endpoint: process.env.VAULT_ADDR || 'http://localhost:8200',
+    token: process.env.VAULT_TOKEN || 'myroot',
+})
 
 /**
  * SETUP
@@ -10,13 +17,6 @@ const port = 3001
 const kafka = new Kafka({
     clientId: '0',
     brokers: [ process.env.KAFKA_SERVER_1 || 'localhost:9092' ],
-})
-const elastic = new Elastic({
-    cloud: { id: process.env.ELASTIC_CLOUD_ID },
-    auth: {
-        username: process.env.ELASTIC_USERNAME,
-        password: process.env.ELASTIC_PASSWORD
-    }
 })
 
 /**
@@ -111,4 +111,20 @@ async function main() {
     });
 }
 
-main().catch(err => console.log(err))
+/**
+ * ENV FROM VAULT
+ */
+ vaultClient.read('secret/data/elastic').then((result) => {
+    process.env.ELASTIC_CLOUD_ID = result.data.data.ELASTIC_CLOUD_ID
+    process.env.ELASTIC_USERNAME = result.data.data.ELASTIC_USERNAME
+    process.env.ELASTIC_PASSWORD = result.data.data.ELASTIC_PASSWORD
+
+    const elastic = new Elastic({
+        cloud: { id: process.env.ELASTIC_CLOUD_ID },
+        auth: {
+            username: process.env.ELASTIC_USERNAME,
+            password: process.env.ELASTIC_PASSWORD
+        }
+    })
+    main().catch(err => console.log(err))
+});

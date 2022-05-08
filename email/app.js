@@ -1,6 +1,14 @@
 const express = require('express')
 var nodemailer = require('nodemailer')
 const { Kafka } = require('kafkajs')
+const VaultSDK = require('node-vault');
+
+const vaultClient = VaultSDK({
+    apiVersion: 'v1',
+    endpoint: process.env.VAULT_ADDR || 'http://localhost:8200',
+    token: process.env.VAULT_TOKEN || 'myroot',
+})
+
 
 /**
  * SETUP
@@ -12,13 +20,6 @@ const kafka = new Kafka({
     brokers: [ process.env.KAFKA_SERVER_1 || 'localhost:9092' ],
 })
 const producer = kafka.producer()
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.MAIL_HOST,
-        pass: proccess.env.MAIL_PASSWORD
-    }
-});
 
 /**
  * MIDDLEWARE
@@ -85,4 +86,20 @@ async function main() {
     });
 }
 
-main().catch(err => console.log(err))
+/**
+ * ENV FROM VAULT
+ */
+vaultClient.read('secret/data/mail').then((result) => {
+    process.env.MAIL_HOST = result.data.data.MAIL_HOST
+    process.env.MAIL_PASSWORD = result.data.data.MAIL_PASSWORD
+    process.env.MAIL_TO = result.data.data.MAIL_TO
+
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.MAIL_HOST,
+            pass: process.env.MAIL_PASSWORD
+        }
+    });
+    main().catch(err => console.log(err))
+});
